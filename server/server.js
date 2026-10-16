@@ -321,13 +321,35 @@ process.on("uncaughtException", (err) => {
   gracefulShutdown("uncaughtException");
 });
 
-process.on("unhandledRejection", (reason, promise) => {
-  logger.error("Unhandled Rejection at:", promise, "reason:", reason);
-  // Only shutdown in production, log in development
+// process.on("unhandledRejection", (reason, promise) => {
+//   logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+//   // Only shutdown in production, log in development
+//   if (process.env.NODE_ENV === "production") {
+//     gracefulShutdown("unhandledRejection");
+//   }
+// });
+
+
+process.on("unhandledRejection", (reason) => {
+  console.error("UNHANDLED REJECTION DETAILS:");
+
+  if (reason instanceof Error) {
+    console.error("Message:", reason.message);
+    console.error("Stack:", reason.stack);
+  } else {
+    console.error("Reason:", reason);
+  }
+
+  logger.error("Unhandled Rejection:", {
+    message: reason instanceof Error ? reason.message : String(reason),
+    stack: reason instanceof Error ? reason.stack : undefined,
+  });
+
   if (process.env.NODE_ENV === "production") {
     gracefulShutdown("unhandledRejection");
   }
 });
+
 
 // Start server
 const PORT = process.env.PORT || 5000;
