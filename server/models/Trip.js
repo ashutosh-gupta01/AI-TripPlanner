@@ -204,18 +204,34 @@ tripSchema.virtual("daysUntilTrip").get(function () {
 });
 
 // Method to calculate total cost
+// tripSchema.methods.calculateTotalCost = function () {
+//   if (this.itinerary.days && this.itinerary.days.length > 0) {
+//     const total = this.itinerary.days.reduce((sum, day) => {
+//       return sum + (day.totalCost?.amount || 0);
+//     }, 0);
+//     this.itinerary.totalCost = {
+//       amount: total,
+//       currency: this.preferences.budget.currency || "USD",
+//     };
+//   }
+//   return this.save();
+// };
+
+
+
 tripSchema.methods.calculateTotalCost = function () {
-  if (this.itinerary.days && this.itinerary.days.length > 0) {
+  if (this.itinerary?.days && this.itinerary.days.length > 0) {
     const total = this.itinerary.days.reduce((sum, day) => {
       return sum + (day.totalCost?.amount || 0);
     }, 0);
+
     this.itinerary.totalCost = {
       amount: total,
-      currency: this.preferences.budget.currency || "USD",
+      currency: this.preferences?.budget?.currency || "USD",
     };
   }
-  return this.save();
 };
+
 
 
 
@@ -237,11 +253,17 @@ tripSchema.methods.updateStatus = function (newStatus) {
 };
 
 // Pre-save middleware to calculate total cost
-tripSchema.pre("save", function (next) {
+// tripSchema.pre("save", function (next) {
+//   if (this.isModified("itinerary.days")) {
+//     this.calculateTotalCost();
+//   }
+//   next();
+// });
+
+tripSchema.pre("save", function () {
   if (this.isModified("itinerary.days")) {
     this.calculateTotalCost();
   }
-  next();
 });
 
 module.exports = mongoose.model("Trip", tripSchema);
