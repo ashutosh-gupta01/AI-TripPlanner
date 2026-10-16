@@ -3,6 +3,23 @@ const Trip = require("../models/Trip");
 const { protect } = require("../middleware/auth");
 const { logger } = require("../middleware/logging");
 
+const sleep = (ms) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+async function generateWithRetry(model, prompt) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await model.generateContent(prompt);
+    } catch (error) {
+      if (![429, 500, 502, 503, 504].includes(error.status) || attempt === 2) {
+        throw error;
+      }
+
+      await sleep(2000 * Math.pow(2, attempt));
+    }
+  }
+}
+
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
@@ -142,7 +159,7 @@ Make sure to include realistic costs, actual attractions, restaurants, and locat
     const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
 
     // Generate content using Gemini
-    const result = await model.generateContent(prompt);
+    const result = await generateWithRetry(model, prompt);
     const response = await result.response;
     let generatedText = response.text();
 
