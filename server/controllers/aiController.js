@@ -22,7 +22,7 @@ async function generateWithRetry(model, prompt) {
 
 // Initialize Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
 
 // @desc    Generate AI-powered trip itinerary
 // @route   POST /api/ai/generate-itinerary
@@ -156,7 +156,7 @@ Make sure to include realistic costs, actual attractions, restaurants, and locat
     } - $${budget.max || 5000}.`;
 
     // Get the generative model
-    const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
 
     // Generate content using Gemini
     const result = await generateWithRetry(model, prompt);
@@ -335,7 +335,7 @@ Please provide an optimized version that:
 
 Return the optimized itinerary in the same JSON format with explanations for key changes in an "optimizationNotes" field.`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     let optimizedText = response.text();
@@ -447,7 +447,7 @@ Please provide suggestions in the following JSON format:
 
 Focus on destinations that match the user's travel style and haven't been visited before.`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     let suggestionsText = response.text();
@@ -578,7 +578,7 @@ Include the following information in JSON format:
   "packingTips": ["item1", "item2", "item3"]
 }`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     let insightsText = response.text();
